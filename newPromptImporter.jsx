@@ -1,0 +1,86 @@
+// Function to check if an object is an array
+function isArray(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
+}
+
+// Function to get the file paths in a folder
+function getPhotoPaths(folderPath) {
+    var folder = new Folder(folderPath);
+    if (!folder.exists) {
+        throw new Error("Folder does not exist: " + folderPath);
+    }
+    
+    var files = folder.getFiles(function(file) {
+        return file instanceof File && file.name.match(/\.(jpg|jpeg|png|gif)$/i);
+    });
+    
+    // Ensure files is an array
+    if (!isArray(files)) {
+        files = Array.prototype.slice.call(files);
+    }
+    
+    // Map to get fsName of each file
+    var filePaths = [];
+    for (var i = 0; i < files.length; i++) {
+        filePaths.push(files[i].fsName);
+    }
+
+    return filePaths;
+
+    
+}
+
+// Main function to import photos and create a composition
+function importPhotosAndCreateComp(folderPath, durationMs) {
+    var photoPaths = getPhotoPaths(folderPath);
+    
+    if (photoPaths.length === 0) {
+        alert("No valid photo files found in the selected folder.");
+        return;
+    }
+    
+    var project = app.project;
+    if (!project) {
+        project = app.newProject();
+    }
+    
+    app.beginUndoGroup("Import Photos and Create Comp");
+
+    // Create a new composition
+    var comp = project.items.addComp("Photo Slideshow", 1920, 1080, 1, photoPaths.length * (durationMs / 1000), 30);
+    
+    // Import each photo and add to the composition
+    for (var i = 0; i < photoPaths.length; i++) {
+        var photoFile = new File(photoPaths[i]);
+        var importOptions = new ImportOptions(photoFile);
+        $.writeln(photoFile)
+        $.writeln(importOptions)
+        if (importOptions.canImportAs(ImportAsType.FOOTAGE)) {
+            importOptions.importAs = ImportAsType.FOOTAGE;
+        }
+        if (project.importFile(importOptions)) {
+            var importedFootage = project.importFile(importOptions);
+            var layer = comp.layers.add(importedFootage);
+            layer.startTime = i * (durationMs / 1000);
+            layer.outPoint = layer.startTime + (durationMs / 1000);
+        }
+    }
+    
+    app.endUndoGroup();
+}
+
+// Prompt user to select folder and input duration
+//var folder = Folder.selectDialog("Select a folder containing the photos");
+var folderPath = "C:/Users/will/coding projects/video maker scripts/editScript/downloaded_images";
+var folder = new Folder(folderPath);
+if (folder) {
+    var durationInput = prompt("Enter the duration for each photo in milliseconds:", "1000");
+    if (durationInput !== null && !isNaN(durationInput) && parseInt(durationInput) > 0) {
+        var durationMs = parseInt(durationInput);
+        importPhotosAndCreateComp(folder.fsName, durationMs);
+    } else {
+        alert("Invalid duration entered.");
+    }
+} else {
+    alert("No folder selected.");
+}

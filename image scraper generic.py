@@ -17,7 +17,7 @@ chromedriver_path = r'C:\Users\will\AppData\Local\Packages\PythonSoftwareFoundat
 
 # Set up the Chrome WebDriver
 service = Service(chromedriver_path)
-driver = webdriver.Chrome(service=service)
+driver = webdriver.Chrome()
 
 # URL of the webpage containing the images
 webpage_url = 'https://www.britannica.com/art/English-literature/images-videos'  # Update this URL

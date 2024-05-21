@@ -31,6 +31,11 @@ function getFilesArray(folderPath) {
 
 var folderPath = "C:/Users/will/coding projects/video maker scripts/editScript/downloaded_images";  // Update this to your folder path
 
+function isArray(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
+}
+
+
 function getPhotoPaths(folderPath) {
     var folder = new Folder(folderPath);
     if (!folder.exists) {
@@ -40,7 +45,7 @@ function getPhotoPaths(folderPath) {
     var files = folder.getFiles();
     
     // Ensure files is an array
-    if (!Array.isArray(files)) {
+    if (!isArray(files)) {
         files = Array.prototype.slice.call(files);
     }
     

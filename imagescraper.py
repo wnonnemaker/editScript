@@ -12,7 +12,7 @@ driver = webdriver.Chrome()
 #chromedriver location: C:\Users\will\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\site-packages\chromedriver_binary
 
 # Open Google Images
-driver.get("https://images.google.com/")
+driver.get("https://www.britannica.com/art/Modernism-art/images-videos")
 
 # Search for images
 search_box = driver.find_element(By.NAME, "q")
